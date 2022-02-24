@@ -1,7 +1,8 @@
 const { RESTDataSource } = require('apollo-datasource-rest');
 const { tmdbKey } = require('../secrets');
-const personReducer = require('../reducers/person');
+const movieCreditReducer = require('../reducers/movieCredit');
 const movieReducer = require('../reducers/movie');
+const providerReducer = require('../reducers/provider');
 
 class Movie extends RESTDataSource {
   constructor () {
@@ -13,9 +14,15 @@ class Movie extends RESTDataSource {
     request.params.set('api_key', tmdbKey);
   }
 
-  async getPopular() {
-    const response = await this.get(`movie/popular`, {});
+  async getMovielist(type) {
+    const response = await this.get(`movie/${type}`, {});
     
+    return !Array.isArray(response?.results) ? [] : response.results.map(movieReducer);
+  }
+
+  async getMovieSearch(query) {
+    const response = await this.get(`search/movie`, {query});
+
     return !Array.isArray(response?.results) ? [] : response.results.map(movieReducer);
   }
 
@@ -28,7 +35,21 @@ class Movie extends RESTDataSource {
   async getMovieCast(movieId) {
     const response = await this.get(`movie/${movieId}/credits`, {});
     
-    return !Array.isArray(response?.cast) ? [] : response.cast.map(personReducer);
+    return !Array.isArray(response?.cast) ? [] : response.cast.map(movieCreditReducer);
+  }
+
+  async getMovieProviders(movieId) {
+    const response = await this.get(`movie/${movieId}/watch/providers?locale=US`, {});
+
+    if(!Array.isArray(response?.cast)) {
+      return [];
+    }
+
+    return {
+      rent: response.results.US.rent.map(providerReducer),
+      buy: response.results.US.buy.map(providerReducer),
+      flat: response.results.US.flat.map(providerReducer)
+    };
   }
 }
 

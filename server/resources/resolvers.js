@@ -1,4 +1,9 @@
 module.exports = {
+  MovielistType: {
+    POPULAR: 'popular',
+    UPCOMING: 'upcoming',
+    TOP_RATED: 'top_rated',
+  },
   Query: {
     moviesById: (_, { id }, { dataSources }) =>
       dataSources.movies.getMovieById(id),
@@ -7,12 +12,17 @@ module.exports = {
       dataSources.people.getPersonById(personId),
 
     // Lists
-    popularMovies: (_, __, { dataSources }) =>
-      dataSources.movies.getPopular()
+    movieList: (_, { type }, { dataSources }) =>
+      dataSources.movies.getMovielist(type),
+
+    movieSearch: (_, {query}, { dataSources }) =>
+      dataSources.movies.getMovieSearch(query),
   },
   Movie: {
     cast: (parent, {}, { dataSources }) =>
       dataSources.movies.getMovieCast(parent.id),
+    providers:(parent, {}, { dataSources}) =>
+      dataSources.movies.getMovieProviders(parent.id),
   },
 
   Person: {
