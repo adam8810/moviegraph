@@ -41,15 +41,22 @@ class Movie extends RESTDataSource {
   async getMovieProviders(movieId) {
     const response = await this.get(`movie/${movieId}/watch/providers?locale=US`, {});
 
-    if(!Array.isArray(response?.cast)) {
-      return [];
+    if(!response?.results) {
+      return {
+        rent: [], buy: [], flat: []
+      };
     }
 
     return {
-      rent: response.results.US.rent.map(providerReducer),
-      buy: response.results.US.buy.map(providerReducer),
-      flat: response.results.US.flat.map(providerReducer)
+      rent: response.results.US?.rent?.map(providerReducer) || [],
+      buy: response.results.US?.buy?.map(providerReducer) || [],
+      flatrate: response.results.US?.flatrate?.map(providerReducer) || [],
+      ads: response.results.US?.ads?.map(providerReducer) || []
     };
+  }
+  async getSimilarMovies(movieId) {
+    const response = await this.get(`/movie/${movieId}/similar`, {});
+    return !Array.isArray(response?.results) ? [] : response.results.map(movieReducer);
   }
 }
 

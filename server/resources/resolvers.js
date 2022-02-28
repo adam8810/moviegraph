@@ -5,7 +5,7 @@ module.exports = {
     TOP_RATED: 'top_rated',
   },
   Query: {
-    moviesById: (_, { id }, { dataSources }) =>
+    movieById: (_, { id }, { dataSources }) =>
       dataSources.movies.getMovieById(id),
 
     person: (_, { personId }, {dataSources}) =>
@@ -23,6 +23,8 @@ module.exports = {
       dataSources.movies.getMovieCast(parent.id),
     providers:(parent, {}, { dataSources}) =>
       dataSources.movies.getMovieProviders(parent.id),
+    similar:(parent, {}, { dataSources}) =>
+      dataSources.movies.getSimilarMovies(parent.id),
   },
 
   Person: {

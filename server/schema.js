@@ -38,17 +38,20 @@ const typeDefs = gql`
     budget: Int
     cast: [MovieCredit]
     providers: ProviderOptions
+    similar: [Movie]!
   }
 
   type ProviderOptions {
-    rent: [Provider]!
-    buy: [Provider]!
-    flat: [Provider]!
+    rent: [Provider]
+    buy: [Provider]
+    flatrate: [Provider]
+    ads: [Provider]
   }
 
   type Provider {
     id: Int!
     name: String!
+    logo_path: String
   }
 
   enum MovielistType {
@@ -58,7 +61,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    moviesById(id: Int!): Movie
+    movieById(id: Int!): Movie
     person(personId: Int!): Person
     movieList(type: MovielistType!): [Movie]!
     movieSearch(query: String!): [Movie]!
